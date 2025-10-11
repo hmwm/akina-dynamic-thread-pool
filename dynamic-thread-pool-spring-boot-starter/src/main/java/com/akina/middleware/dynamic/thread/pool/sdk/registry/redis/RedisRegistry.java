@@ -10,6 +10,7 @@ import org.redisson.api.RSet;
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.time.Duration;
 import java.util.List;
@@ -20,16 +21,12 @@ public class RedisRegistry implements IRegistry {
 
     private final RedissonClient redissonClient;
 
-    public RedisRegistry(RedissonClient redissonClient) {
+    public RedisRegistry(@Qualifier RedissonClient redissonClient) {
         this.redissonClient = redissonClient;
     }
 
     @Override
     public void reportThreadPool(List<ThreadPoolConfigEntity> threadPoolConfigEntities) {
-        // 旧版本
-//        RList<ThreadPoolConfigEntity> list = redissonClient.getList(RegistryEnumVO.THREAD_POOL_COFIG_LIST_KEY.getKey());
-//        list.delete();
-//        list.addAll(threadPoolConfigEntities);
 
         // 新版去重兼容
         RSet<ThreadPoolConfigEntity> set = redissonClient.getSet(RegistryEnumVO.THREAD_POOL_CONFIG_SET_KEY.getKey());

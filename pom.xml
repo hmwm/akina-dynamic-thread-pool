@@ -55,7 +55,7 @@
         </dependencies>
     </dependencyManagement>
 
-    <!-- ✅ 构建插件（简化并保持UTF-8与Java版本） -->
+    <!--  构建插件（简化并保持UTF-8与Java版本） -->
     <build>
         <finalName>akina-dynamic-thread-pool</finalName>
         <plugins>
@@ -64,26 +64,26 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
         </plugins>
     </build>
 
-    <!-- ✅ 发布配置（预留，可后续填公司私服信息） -->
-    <distributionManagement>
-        <repository>
-            <id>internal-release</id>
-            <name>Internal Releases</name>
-            <url>https://maven.yourcompany.com/repository/releases</url>
-        </repository>
-        <snapshotRepository>
-            <id>internal-snapshots</id>
-            <name>Internal Snapshots</name>
-            <url>https://maven.yourcompany.com/repository/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
+    <!--  发布配置（预留，可后续填公司私服信息） -->
+<!--    <distributionManagement>-->
+<!--        <repository>-->
+<!--            <id>internal-release</id>-->
+<!--            <name>Internal Releases</name>-->
+<!--            <url>https://maven.yourcompany.com/repository/releases</url>-->
+<!--        </repository>-->
+<!--        <snapshotRepository>-->
+<!--            <id>internal-snapshots</id>-->
+<!--            <name>Internal Snapshots</name>-->
+<!--            <url>https://maven.yourcompany.com/repository/snapshots</url>-->
+<!--        </snapshotRepository>-->
+<!--    </distributionManagement>-->
 
 </project>
