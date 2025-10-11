@@ -17,6 +17,8 @@ import org.redisson.codec.JsonJacksonCodec;
 import org.redisson.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -72,7 +74,9 @@ public class DynamicThreadPoolAutoConfig {
     }
 
     @Bean("dynamicThreadPollService")
-    public DynamicThreadPoolService dynamicThreadPollService(ApplicationContext applicationContext, Map<String, ThreadPoolExecutor> threadPoolExecutorMap, RedissonClient redissonClient) {
+    public DynamicThreadPoolService dynamicThreadPollService(ApplicationContext applicationContext,
+                                                             @Autowired(required=false) Map<String, ThreadPoolExecutor> threadPoolExecutorMap,
+                                                             RedissonClient redissonClient) {
         applicationName = applicationContext.getEnvironment().getProperty("spring.application.name");
 
         if (StringUtils.isBlank(applicationName)) {
@@ -91,16 +95,6 @@ public class DynamicThreadPoolAutoConfig {
         }
 
         return new DynamicThreadPoolService(applicationName, threadPoolExecutorMap);
-//        Set<String> threadPoolKeys = threadPoolExecutorMap.keySet();
-//        for (String threadPoolKey : threadPoolKeys) {
-//            ThreadPoolExecutor threadPoolExecutor = threadPoolExecutorMap.get(threadPoolKey);
-//            int poolSize = threadPoolExecutor.getPoolSize();
-//            int corePoolSize = threadPoolExecutor.getCorePoolSize();
-//            BlockingQueue<Runnable> queue = threadPoolExecutor.getQueue();
-//            String simpleName = queue.getClass().getSimpleName();
-//        }
-//
-//        logger.info("线程池信息：{}", JSON.toJSONString(threadPoolExecutorMap.keySet()));
 
     }
 
