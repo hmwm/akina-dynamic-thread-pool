@@ -10,6 +10,7 @@ import org.redisson.api.RSet;
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.time.Duration;
 import java.util.List;
@@ -20,7 +21,7 @@ public class RedisRegistry implements IRegistry {
 
     private final RedissonClient redissonClient;
 
-    public RedisRegistry(RedissonClient redissonClient) {
+    public RedisRegistry(@Qualifier RedissonClient redissonClient) {
         this.redissonClient = redissonClient;
     }
 
