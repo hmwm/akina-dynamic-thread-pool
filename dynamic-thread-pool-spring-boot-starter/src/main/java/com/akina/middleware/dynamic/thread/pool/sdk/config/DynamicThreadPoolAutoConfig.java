@@ -17,6 +17,7 @@ import org.redisson.codec.JsonJacksonCodec;
 import org.redisson.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -74,7 +75,9 @@ public class DynamicThreadPoolAutoConfig {
     }
 
     @Bean("dynamicThreadPollService")
-    public DynamicThreadPoolService dynamicThreadPollService(ApplicationContext applicationContext, Map<String, ThreadPoolExecutor> threadPoolExecutorMap, RedissonClient redissonClient) {
+    public DynamicThreadPoolService dynamicThreadPollService(ApplicationContext applicationContext,
+                                                             @Autowired(required = false) Map<String, ThreadPoolExecutor> threadPoolExecutorMap,
+                                                             RedissonClient redissonClient) {
         applicationName = applicationContext.getEnvironment().getProperty("spring.application.name");
 
         if (StringUtils.isBlank(applicationName)) {
