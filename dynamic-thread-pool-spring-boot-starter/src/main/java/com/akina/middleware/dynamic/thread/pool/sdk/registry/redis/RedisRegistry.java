@@ -36,8 +36,8 @@ public class RedisRegistry implements IRegistry {
         set.addAll(threadPoolConfigEntities);
         logger.info("动态线程池上报成功，共 {} 个配置项，已自动去重。", threadPoolConfigEntities.size());
 
-        if (redissonClient.getKeys().countExists(RegistryEnumVO.THREAD_POOL_COFIG_LIST_KEY.getKey()) == 0) {
-            RList<ThreadPoolConfigEntity> list = redissonClient.getList(RegistryEnumVO.THREAD_POOL_COFIG_LIST_KEY.getKey());
+        if (redissonClient.getKeys().countExists(RegistryEnumVO.THREAD_POOL_CONFIG_LIST_KEY.getKey()) == 0) {
+            RList<ThreadPoolConfigEntity> list = redissonClient.getList(RegistryEnumVO.THREAD_POOL_CONFIG_LIST_KEY.getKey());
             list.addAll(threadPoolConfigEntities);
         }
 
