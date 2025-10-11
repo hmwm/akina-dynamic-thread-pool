@@ -21,7 +21,7 @@ public class RedisRegistry implements IRegistry {
 
     private final RedissonClient redissonClient;
 
-    public RedisRegistry(@Qualifier RedissonClient redissonClient) {
+    public RedisRegistry(@Qualifier("dynamicThreadRedissonClient") RedissonClient redissonClient) {
         this.redissonClient = redissonClient;
     }
 
