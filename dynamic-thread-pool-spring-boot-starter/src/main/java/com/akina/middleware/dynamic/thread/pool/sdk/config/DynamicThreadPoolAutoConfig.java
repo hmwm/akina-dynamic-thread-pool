@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -26,9 +27,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ThreadPoolExecutor;
+
+import static jdk.nashorn.internal.runtime.regexp.joni.Config.log;
 
 
 /**
@@ -44,6 +48,7 @@ public class DynamicThreadPoolAutoConfig {
     private String applicationName;
 
     @Bean(name = "dynamicThreadRedissonClient")
+    @ConditionalOnMissingBean(RedissonClient.class)
     public RedissonClient redissonClient(DynamicThreadPoolAutoProperties properties) {
         Config config = new Config();
         // 根据需要可以设定编解码器；https://github.com/redisson/redisson/wiki/4.-%E6%95%B0%E6%8D%AE%E5%BA%8F%E5%88%97%E5%8C%96
@@ -74,15 +79,21 @@ public class DynamicThreadPoolAutoConfig {
         return new RedisRegistry(redissonClient);
     }
 
-    @Bean("dynamicThreadPollService")
-    public DynamicThreadPoolService dynamicThreadPollService(ApplicationContext applicationContext,
-                                                             @Nullable Map<String, ThreadPoolExecutor> threadPoolExecutorMap,
+    @Bean("dynamicThreadPoolService")
+    public DynamicThreadPoolService dynamicThreadPoolService(ApplicationContext applicationContext,
+                                                             @Nullable
+                                                             Map<String, ThreadPoolExecutor> threadPoolExecutorMap,
                                                              RedissonClient redissonClient) {
         applicationName = applicationContext.getEnvironment().getProperty("spring.application.name");
 
         if (StringUtils.isBlank(applicationName)) {
             applicationName = "缺省的";
             logger.warn("动态线程池，启动提示。SpringBoot 应用未配置 spring.application.name 无法获取到应用名称！");
+        }
+
+        // 保底处理：无 Bean 时置空 Map
+        if (threadPoolExecutorMap == null) {
+            threadPoolExecutorMap = Collections.emptyMap();
         }
 
         // 获取缓存数据，设置本地线程池配置
