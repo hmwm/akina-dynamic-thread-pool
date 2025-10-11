@@ -1,7 +1,8 @@
 package com.akina.middleware.dynamic.thread.pool.sdk.trigger.listener;
 
+import com.akina.middleware.dynamic.thread.pool.common.entity.ThreadPoolConfigEntity;
 import com.akina.middleware.dynamic.thread.pool.sdk.domain.IDynamicThreadPoolService;
-import com.akina.middleware.dynamic.thread.pool.sdk.domain.model.entry.ThreadPoolConfigEntity;
+
 import com.akina.middleware.dynamic.thread.pool.sdk.registry.IRegistry;
 import com.alibaba.fastjson2.JSON;
 import org.redisson.api.listener.MessageListener;

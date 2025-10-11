@@ -53,8 +53,15 @@
         <dependency>
             <groupId>com.akina.middleware</groupId>
             <artifactId>dynamic-thread-pool-spring-boot-starter</artifactId>
-            <version>1.0</version>
+            <version>${project.version}</version>
         </dependency>
+
+<!--        <dependency>-->
+<!--            <groupId>com.akina.middleware</groupId>-->
+<!--            <artifactId>dynamic-thread-pool-common</artifactId>-->
+<!--            <version>${project.version}</version>-->
+<!--        </dependency>-->
+
     </dependencies>
 
     <build>

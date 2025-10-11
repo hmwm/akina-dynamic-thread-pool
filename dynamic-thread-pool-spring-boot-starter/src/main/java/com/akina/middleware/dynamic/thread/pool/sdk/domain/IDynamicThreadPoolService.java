@@ -1,6 +1,8 @@
 package com.akina.middleware.dynamic.thread.pool.sdk.domain;
 
-import com.akina.middleware.dynamic.thread.pool.sdk.domain.model.entry.ThreadPoolConfigEntity;
+
+
+import com.akina.middleware.dynamic.thread.pool.common.entity.ThreadPoolConfigEntity;
 
 import java.util.List;
 

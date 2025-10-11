@@ -52,6 +52,12 @@
             <artifactId>redisson-spring-boot-starter</artifactId>
             <version>3.26.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.akina.middleware</groupId>
+            <artifactId>dynamic-thread-pool-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
     </dependencies>
 
     <build>

@@ -1,9 +1,10 @@
 package com.akina.middleware.dynamic.thread.pool.sdk.config;
 
+import com.akina.middleware.dynamic.thread.pool.common.entity.ThreadPoolConfigEntity;
+import com.akina.middleware.dynamic.thread.pool.common.enums.RegistryEnumVO;
 import com.akina.middleware.dynamic.thread.pool.sdk.domain.DynamicThreadPoolService;
 import com.akina.middleware.dynamic.thread.pool.sdk.domain.IDynamicThreadPoolService;
-import com.akina.middleware.dynamic.thread.pool.sdk.domain.model.entry.ThreadPoolConfigEntity;
-import com.akina.middleware.dynamic.thread.pool.sdk.domain.model.valobj.RegistryEnumVO;
+
 import com.akina.middleware.dynamic.thread.pool.sdk.registry.IRegistry;
 import com.akina.middleware.dynamic.thread.pool.sdk.registry.redis.RedisRegistry;
 import com.akina.middleware.dynamic.thread.pool.sdk.trigger.job.ThreadPoolDataReportJob;

@@ -1,6 +1,7 @@
 package com.akina.middleware.dynamic.thread.pool.trigger;
 
-import com.akina.middleware.dynamic.thread.pool.sdk.domain.model.entry.ThreadPoolConfigEntity;
+import com.akina.middleware.dynamic.thread.pool.common.entity.ThreadPoolConfigEntity;
+import com.akina.middleware.dynamic.thread.pool.common.enums.RegistryEnumVO;
 import com.akina.middleware.dynamic.thread.pool.type.Response;
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +31,7 @@ public class DynamicThreadPoolController {
     @RequestMapping(value = "query_thread_pool_list", method = RequestMethod.GET)
     public Response<List<ThreadPoolConfigEntity>> queryThreadPoolList() {
         try {
-            RSet<ThreadPoolConfigEntity> cacheSet = redissonClient.getSet("THREAD_POOL_CONFIG_SET_KEY");
+            RSet<ThreadPoolConfigEntity> cacheSet = redissonClient.getSet(RegistryEnumVO.THREAD_POOL_CONFIG_SET_KEY.getKey());
             return Response.<List<ThreadPoolConfigEntity>>builder()
                     .code(Response.Code.SUCCESS.getCode())
                     .info(Response.Code.SUCCESS.getInfo())
@@ -55,7 +56,7 @@ public class DynamicThreadPoolController {
     @RequestMapping(value = "query_thread_pool_config", method = RequestMethod.GET)
     public Response<ThreadPoolConfigEntity> queryThreadPoolConfig(@RequestParam String appName, @RequestParam String threadPoolName) {
         try {
-            String cacheKey = "THREAD_POOL_CONFIG_PARAMETER_LIST_KEY" + "_" + appName + "_" + threadPoolName;
+            String cacheKey = RegistryEnumVO.THREAD_POOL_CONFIG_PARAMETER_LIST_KEY.getKey() + "_" + appName + "_" + threadPoolName;
             ThreadPoolConfigEntity threadPoolConfigEntity = redissonClient.<ThreadPoolConfigEntity>getBucket(cacheKey).get();
             return Response.<ThreadPoolConfigEntity>builder()
                     .code(Response.Code.SUCCESS.getCode())
@@ -88,7 +89,7 @@ public class DynamicThreadPoolController {
     public Response<Boolean> updateThreadPoolConfig(@RequestBody ThreadPoolConfigEntity request) {
         try {
             log.info("修改线程池配置开始{}, {}, {}", request.getAppName(), request.getThreadPoolName(), JSON.toJSONString(request));
-            RTopic topic = redissonClient.getTopic("DYNAMIC_THREAD_POOL_REDIS_TOPIC" + "_" + request.getAppName());
+            RTopic topic = redissonClient.getTopic(RegistryEnumVO.DYNAMIC_THREAD_POOL_REDIS_TOPIC.getKey() + "_" + request.getAppName());
             topic.publish(request);
             log.info("修改线程池配置完成{}, {}", request.getAppName(), request.getThreadPoolName());
             return Response.<Boolean>builder()

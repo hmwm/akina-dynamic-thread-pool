@@ -1,8 +1,8 @@
 package com.akina.middleware.dynamic.thread.pool.sdk.registry.redis;
 
-import com.akina.middleware.dynamic.thread.pool.sdk.config.DynamicThreadPoolAutoConfig;
-import com.akina.middleware.dynamic.thread.pool.sdk.domain.model.entry.ThreadPoolConfigEntity;
-import com.akina.middleware.dynamic.thread.pool.sdk.domain.model.valobj.RegistryEnumVO;
+
+import com.akina.middleware.dynamic.thread.pool.common.entity.ThreadPoolConfigEntity;
+import com.akina.middleware.dynamic.thread.pool.common.enums.RegistryEnumVO;
 import com.akina.middleware.dynamic.thread.pool.sdk.registry.IRegistry;
 import org.redisson.api.RBucket;
 import org.redisson.api.RList;

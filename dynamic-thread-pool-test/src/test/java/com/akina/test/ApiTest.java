@@ -1,6 +1,7 @@
 package com.akina.test;
 
-import com.akina.middleware.dynamic.thread.pool.sdk.domain.model.entry.ThreadPoolConfigEntity;
+
+import com.akina.middleware.dynamic.thread.pool.common.entity.ThreadPoolConfigEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;

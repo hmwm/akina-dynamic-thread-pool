@@ -1,9 +1,10 @@
 package com.akina.middleware.dynamic.thread.pool.sdk.trigger.job;
 
+import com.akina.middleware.dynamic.thread.pool.common.entity.ThreadPoolConfigEntity;
 import com.akina.middleware.dynamic.thread.pool.sdk.config.DynamicThreadPoolAutoConfig;
 import com.akina.middleware.dynamic.thread.pool.sdk.domain.DynamicThreadPoolService;
 import com.akina.middleware.dynamic.thread.pool.sdk.domain.IDynamicThreadPoolService;
-import com.akina.middleware.dynamic.thread.pool.sdk.domain.model.entry.ThreadPoolConfigEntity;
+
 import com.akina.middleware.dynamic.thread.pool.sdk.registry.IRegistry;
 import com.alibaba.fastjson2.JSON;
 import org.slf4j.Logger;

@@ -1,4 +1,4 @@
-package com.akina.middleware.dynamic.thread.pool.sdk.domain.model.valobj;
+package com.akina.middleware.dynamic.thread.pool.common.enums;
 
 public enum RegistryEnumVO {
     THREAD_POOL_CONFIG_LIST_KEY("THREAD_POOL_CONFIG_LIST_KEY", "池化配置列表"),
