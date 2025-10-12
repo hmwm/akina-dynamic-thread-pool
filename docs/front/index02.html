@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Dynamic Thread Pool 「动态线程池」</title>
+    <style>
+        /* ===== 全局样式 ===== */
+        body {
+            font-family: "JetBrains Mono", Consolas, monospace;
+            margin: 0;
+            padding: 0;
+            background: radial-gradient(circle at top left, #1a1029, #0d0d0f);
+            color: #e0d8ff;
+            overflow-x: hidden;
+        }
+
+        h1 {
+            text-align: center;
+            padding: 25px 0;
+            background: linear-gradient(90deg, #7c3aed, #a855f7, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 30px;
+            letter-spacing: 1.5px;
+            text-shadow: 0 0 15px rgba(168, 85, 247, 0.3);
+        }
+
+        /* ===== 容器样式 ===== */
+        .container {
+            width: 90%;
+            margin: 40px auto;
+            background: rgba(40, 20, 60, 0.25);
+            backdrop-filter: blur(8px);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 0 25px rgba(139, 92, 246, 0.25);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+        }
+
+        /* ===== 按钮样式 ===== */
+        button {
+            background: linear-gradient(90deg, #7c3aed, #9333ea);
+            color: #f5f3ff;
+            padding: 10px 20px;
+            margin: 10px 5px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            transition: all 0.25s ease;
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+        }
+
+        button:hover {
+            background: linear-gradient(90deg, #a855f7, #c084fc);
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.6);
+            transform: scale(1.05);
+        }
+
+        /* ===== 表格样式 ===== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.2);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+        }
+
+        th {
+            background: rgba(139, 92, 246, 0.15);
+            color: #c4b5fd;
+            border-bottom: 1px solid rgba(168, 85, 247, 0.2);
+        }
+
+        tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        tr:hover {
+            background: rgba(139, 92, 246, 0.15);
+            transition: background 0.3s;
+        }
+
+        /* ===== 加载动画 ===== */
+        .loader {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .loader::after {
+            content: '';
+            display: inline-block;
+            width: 34px;
+            height: 34px;
+            border: 3px solid #a78bfa;
+            border-top: 3px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        /* ===== 弹窗 (Modal) 样式 ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(6px);
+        }
+
+        .modal-content {
+            background: rgba(40, 20, 60, 0.9);
+            margin: 8% auto;
+            padding: 25px 30px;
+            border-radius: 14px;
+            width: 90%;
+            max-width: 480px;
+            color: #f3e8ff;
+            box-shadow: 0 0 25px rgba(168, 85, 247, 0.3);
+            border: 1px solid rgba(168, 85, 247, 0.4);
+        }
+
+        .modal-content h2 {
+            color: #c084fc;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #d8b4fe;
+        }
+
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #e0d8ff;
+            outline: none;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            border-color: #a78bfa;
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
+        }
+
+        input[readonly] {
+            opacity: 0.7;
+        }
+
+        .close {
+            float: right;
+            font-size: 24px;
+            color: #a78bfa;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #c084fc;
+        }
+
+    </style>
+</head>
+<body>
+<h1>Dynamic Thread Pool 「动态线程池」</h1>
+<div class="container">
+    <div style="text-align: center;">
+        <button id="autoRefreshBtn">⚡ 开启自动刷新</button>
+        <button id="stopAutoRefreshBtn" style="display:none;">🛑 停止刷新</button>
+    </div>
+    <div class="loader"></div>
+    <table id="threadPoolList">
+        <thead>
+        <tr>
+            <th>应用名称</th>
+            <th>线程池名称</th>
+            <th>核心线程数</th>
+            <th>最大线程数</th>
+            <th>活跃线程</th>
+            <th>当前线程</th>
+            <th>队列类型</th>
+            <th>队列任务</th>
+            <th>剩余容量</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<!-- 模态框 -->
+<div id="myModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>线程池配置修改</h2>
+        <form id="configForm">
+            <label>应用名称</label>
+            <input type="text" id="appName" readonly>
+            <label>线程池名称</label>
+            <input type="text" id="threadPoolName" readonly>
+            <label>核心线程数</label>
+            <input type="number" id="corePoolSize">
+            <label>最大线程数</label>
+            <input type="number" id="maximumPoolSize">
+            <button type="button" onclick="updateConfig()">💾 确认修改</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var loader = document.querySelector('.loader');
+        var tbody = document.querySelector('#threadPoolList tbody');
+        var autoRefreshInterval;
+        var autoRefreshBtn = document.getElementById('autoRefreshBtn');
+        var stopAutoRefreshBtn = document.getElementById('stopAutoRefreshBtn');
+
+        autoRefreshBtn.addEventListener('click', function() {
+            if (!autoRefreshInterval) {
+                autoRefreshInterval = setInterval(fetchThreadPoolList, 3000);
+                autoRefreshBtn.style.display = 'none';
+                stopAutoRefreshBtn.style.display = 'inline';
+            }
+        });
+
+        stopAutoRefreshBtn.addEventListener('click', function() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+                autoRefreshInterval = null;
+                autoRefreshBtn.style.display = 'inline';
+                stopAutoRefreshBtn.style.display = 'none';
+            }
+        });
+
+        function fetchThreadPoolList() {
+            loader.style.display = 'block';
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', 'http://localhost:8090/api/v1/dynamic/thread/pool/query_thread_pool_list', true);
+            xhr.onload = function() {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    var response = JSON.parse(xhr.responseText);
+                    if (response.code === "0000" && Array.isArray(response.data)) {
+                        var html = '';
+                        response.data.forEach(function(item) {
+                            html += '<tr>';
+                            html += '<td>' + item.appName + '</td>';
+                            html += '<td>' + item.threadPoolName + '</td>';
+                            html += '<td>' + item.corePoolSize + '</td>';
+                            html += '<td>' + item.maximumPoolSize + '</td>';
+                            html += '<td>' + item.activeCount + '</td>';
+                            html += '<td>' + item.poolSize + '</td>';
+                            html += '<td>' + item.queueType + '</td>';
+                            html += '<td>' + item.queueSize + '</td>';
+                            html += '<td>' + item.remainingCapacity + '</td>';
+                            html += '<td><button onclick="openModal(\'' + item.appName + '\', \'' + item.threadPoolName + '\')">⚙ 修改</button></td>';
+                            html += '</tr>';
+                        });
+                        tbody.innerHTML = html;
+                    }
+                }
+                loader.style.display = 'none';
+            };
+            xhr.onerror = function() {
+                loader.style.display = 'none';
+            };
+            xhr.send();
+        }
+
+        fetchThreadPoolList();
+    });
+
+    var modal = document.getElementById("myModal");
+    var span = document.getElementsByClassName("close")[0];
+    span.onclick = function() { modal.style.display = "none"; }
+    window.onclick = function(event) {
+        if (event.target == modal) modal.style.display = "none";
+    }
+
+    function openModal(appName, threadPoolName) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'http://localhost:8090/api/v1/dynamic/thread/pool/query_thread_pool_config?appName=' + appName + '&threadPoolName=' + threadPoolName, true);
+        xhr.onload = function() {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                var response = JSON.parse(xhr.responseText);
+                if (response.code === "0000" && response.data) {
+                    document.getElementById('appName').value = response.data.appName;
+                    document.getElementById('threadPoolName').value = response.data.threadPoolName;
+                    document.getElementById('corePoolSize').value = response.data.corePoolSize;
+                    document.getElementById('maximumPoolSize').value = response.data.maximumPoolSize;
+                    modal.style.display = "block";
+                }
+            }
+        };
+        xhr.send();
+    }
+
+    function updateConfig() {
+        var data = {
+            appName: document.getElementById('appName').value,
+            threadPoolName: document.getElementById('threadPoolName').value,
+            corePoolSize: parseInt(document.getElementById('corePoolSize').value, 10),
+            maximumPoolSize: parseInt(document.getElementById('maximumPoolSize').value, 10)
+        };
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', 'http://localhost:8090/api/v1/dynamic/thread/pool/update_thread_pool_config', true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.onload = function() {
+            var response = JSON.parse(xhr.responseText);
+            if (xhr.status >= 200 && xhr.status < 300 && response.code === "0000") {
+                alert('✅ 修改成功！');
+                modal.style.display = "none";
+                location.reload();
+            } else {
+                alert('❌ 修改失败: ' + (response.info || 'Unknown error'));
+            }
+        };
+        xhr.send(JSON.stringify(data));
+    }
+</script>
+</body>
+</html>
